@@ -6,7 +6,6 @@
 #include <iphlpapi.h>
 #include "network_utils.h"
 
-#pragma comment(lib, "advapi32.lib")
 #pragma comment(lib, "ws2_32.lib")   // Link Winsock 2 library
 #pragma comment(lib, "iphlpapi.lib") // Link IP Helper API library
 
@@ -138,52 +137,6 @@ void get_all_local_macs(char *macs_str, size_t size)
   }
 }
 
-BOOL EnablePrivilege(LPCWSTR privName, BOOL enable)
-{
-    HANDLE hToken;
-    TOKEN_PRIVILEGES tp;
-    LUID luid;
-
-    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken))
-        return FALSE;
-
-    if (!LookupPrivilegeValueW(NULL, privName, &luid)) {
-        CloseHandle(hToken);
-        return FALSE;
-    }
-
-    tp.PrivilegeCount = 1;
-    tp.Privileges[0].Luid = luid;
-    tp.Privileges[0].Attributes = (enable ? SE_PRIVILEGE_ENABLED : 0);
-
-    if (!AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES), NULL, NULL)) {
-        CloseHandle(hToken);
-        return FALSE;
-    }
-
-    CloseHandle(hToken);
-    return (GetLastError() == ERROR_SUCCESS);
-}
-
-void ShutdownUsingExitWindowsEx()
-{
-    // 先启用 SeShutdownPrivilege
-    if (!EnablePrivilege(L"SeShutdownPrivilege", TRUE)) {
-        // 失败处理
-        fprintf(stderr, "EnablePrivilege failed\n");
-        return;
-    }
-
-    // EWX_SHUTDOWN | EWX_POWEROFF | EWX_FORCE 可根据需要调整（注意 EWX_FORCE 会强制关闭应用）
-    if (!ExitWindowsEx(EWX_SHUTDOWN | EWX_POWEROFF, SHTDN_REASON_MAJOR_OTHER)) {
-        fprintf(stderr, "ExitWindowsEx failed: %lu\n", GetLastError());
-    }
-
-    // 可选：禁用权限
-    EnablePrivilege(L"SeShutdownPrivilege", FALSE);
-}
-
-
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
   WSADATA wsaData;
@@ -242,7 +195,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
       {
         if (strstr(buffer, token) != NULL)
         {
-          ShutdownUsingExitWindowsEx();
+          system("shutdown /s /t 0");
           break;
         }
         token = strtok(NULL, ",");

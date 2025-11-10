@@ -54,13 +54,28 @@
 
 ## 🏁 自启动
 
-推荐方式：将 `home_pc_server.exe` 的快捷方式放入 Windows 启动文件夹（shell:startup）。
+推荐方式：使用 [NSSM](https://nssm.cc/) 将 `home_pc_server.exe` 注册为 Windows 服务。
 
 **操作方法：**
 
-1. 按 `Win + R`，输入 `shell:startup` 并回车，打开启动文件夹。
-2. 将 `home_pc_server.exe` 的快捷方式复制到该文件夹。
-3. 下次开机自动后台运行。
+1. 下载 NSSM 工具：[NSSM 官方下载](https://nssm.cc/download)。
+2. 将 NSSM 解压到任意目录，并将其路径添加到系统环境变量。
+3. 打开命令提示符（管理员权限），运行以下命令：
+   ```sh
+   nssm install HomePCServer
+   ```
+4. 在弹出的窗口中：
+   - **Path**：选择 `home_pc_server.exe` 的完整路径。
+   - **Startup directory**：选择 `home_pc_server.exe` 所在的目录。
+   - 点击 **Install service**。
+5. 启动服务：
+   ```sh
+   nssm start HomePCServer
+   ```
+
+完成后，`home_pc_server.exe` 将作为 Windows 服务运行，并在系统启动时自动启动。
+
+---
 
 ## 📦 心跳包格式
 
