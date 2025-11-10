@@ -6,6 +6,7 @@
 #include <iphlpapi.h>
 #include "network_utils.h"
 
+#pragma comment(lib, "advapi32.lib")
 #pragma comment(lib, "ws2_32.lib")   // Link Winsock 2 library
 #pragma comment(lib, "iphlpapi.lib") // Link IP Helper API library
 
@@ -167,7 +168,7 @@ BOOL EnablePrivilege(LPCWSTR privName, BOOL enable)
 void ShutdownUsingExitWindowsEx()
 {
     // 先启用 SeShutdownPrivilege
-    if (!EnablePrivilege(SE_SHUTDOWN_NAME, TRUE)) {
+    if (!EnablePrivilege(L"SeShutdownPrivilege", TRUE)) {
         // 失败处理
         fprintf(stderr, "EnablePrivilege failed\n");
         return;
@@ -179,7 +180,7 @@ void ShutdownUsingExitWindowsEx()
     }
 
     // 可选：禁用权限
-    EnablePrivilege(SE_SHUTDOWN_NAME, FALSE);
+    EnablePrivilege(L"SeShutdownPrivilege", FALSE);
 }
 
 
@@ -241,7 +242,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
       {
         if (strstr(buffer, token) != NULL)
         {
-          system("shutdown /s /t 0");
+          ShutdownUsingExitWindowsEx();
           break;
         }
         token = strtok(NULL, ",");
