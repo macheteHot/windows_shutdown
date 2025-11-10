@@ -7,6 +7,7 @@
 #include "network_utils.h"
 
 #pragma comment(lib, "advapi32.lib")
+#pragma comment(lib, "user32.lib")
 #pragma comment(lib, "ws2_32.lib")   // Link Winsock 2 library
 #pragma comment(lib, "iphlpapi.lib") // Link IP Helper API library
 

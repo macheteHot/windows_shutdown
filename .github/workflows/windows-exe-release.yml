@@ -11,12 +11,12 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
-      - name: Set up MSVCGW
+      - name: Set up MSVC environment
         uses: ilammy/msvc-dev-cmd@v1
-      - name: Build exe with MinGW
+      - name: Build EXE
         run: |
-          cl /O2 /MD /Fe:home_pc_server.exe src\main.c src\network_utils.c ws2_32.lib iphlpapi.lib advapi32.lib /link /SUBSYSTEM:WINDOWS /DEBUG:NONE
-      - name: Upload exe to release
+          cl /O2 /MD /Fe:home_pc_server.exe src\main.c src\network_utils.c ws2_32.lib iphlpapi.lib advapi32.lib user32.lib /link /SUBSYSTEM:WINDOWS /DEBUG:NONE
+      - name: Upload EXE to release
         uses: softprops/action-gh-release@v2
         with:
           files: home_pc_server.exe
