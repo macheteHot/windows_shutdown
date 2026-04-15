@@ -61,15 +61,6 @@ DWORD WINAPI heartbeat_sender(LPVOID arg)
       {
         if (pAdapterInfo->Type == MIB_IF_TYPE_ETHERNET && pAdapterInfo->AddressLength == 6)
         {
-          // 排除虚拟网卡
-          if (strstr(pAdapterInfo->Description, "VirtualBox") != NULL ||
-              strstr(pAdapterInfo->Description, "VMware") != NULL ||
-              strstr(pAdapterInfo->Description, "Hyper-V") != NULL ||
-              (pAdapterInfo->Address[0] == 0x0A && pAdapterInfo->Address[1] == 0x00 && pAdapterInfo->Address[2] == 0x27)) // VirtualBox MAC
-          {
-            pAdapterInfo = pAdapterInfo->Next;
-            continue;
-          }
           // 判断是否为局域网网卡（常见局域网网段：10.x.x.x, 172.16.x.x-172.31.x.x, 192.168.x.x）
           DWORD ip = inet_addr(pAdapterInfo->IpAddressList.IpAddress.String);
           unsigned char *b = (unsigned char *)&ip;
